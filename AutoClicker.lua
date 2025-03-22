@@ -12,7 +12,7 @@ local DetectorMT = {
         end,
         Fire = function(self)
             if self.Instance.Parent then
-                fireclickdetector(self.Instance, 1, true)
+                fireclickdetector(self.Instance, 10, true)
             end
         end
     }
