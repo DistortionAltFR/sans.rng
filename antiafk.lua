@@ -2,10 +2,11 @@ local TextChatService = game:GetService("TextChatService")
 local Players = game:GetService("Players")
 
 local messages = {
-    "/antiafk",
-    "/antikick",
-    "/antilag",
-    "/antiteleport"
+    ";antiafk",
+    ";antikick",
+    ";antilag",
+    ";antiteleport",
+    ";autorj"
 }
 
 local function sendMessages()
