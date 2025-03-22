@@ -6,12 +6,23 @@ local HttpService = game:GetService("HttpService")
 
 local LocalPlayer = Players.LocalPlayer
 
+-- Function to send notifications with a fallback
+local function SendNotification(title, text, duration, buttonText)
+    if StarterGui.SetCore then
+        StarterGui:SetCore("SendNotification", {
+            Title = title,
+            Text = text,
+            Button1 = buttonText or "OK",
+            Duration = duration or 5
+        })
+    else
+        -- Fallback method if SetCore is not available
+        warn("Notification: " .. title .. " - " .. text)
+    end
+end
+
 if game.PlaceId ~= 91694942823334 then
-    StarterGui:SetCore("SendNotification", {
-        Title = "SCRIPT BLOCKED",
-        Text = "This script can only run in the correct game!",
-        Duration = 5
-    })
+    SendNotification("SCRIPT BLOCKED", "This script can only run in the correct game!", 5)
     return
 end
 
@@ -21,12 +32,7 @@ task.spawn(function()
     print("External scripts loaded successfully.")
 end)
 
-StarterGui:SetCore("SendNotification", {
-    Title = "AUTO-FARM LOADED!",
-    Text = "Made by DistortionAltFR | typical.rng",
-    Button1 = "OK",
-    Duration = 5
-})
+SendNotification("AUTO-FARM LOADED!", "Made by DistortionAltFR | typical.rng", 5, "OK")
 
 local ClickDetectors = setmetatable({}, {__mode = "k"})
 local DetectorMT = {
