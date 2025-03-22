@@ -4,6 +4,28 @@ local RunService = game:GetService("RunService")
 
 local LocalPlayer = Players.LocalPlayer
 
+if game.PlaceId ~= 91694942823334 then
+    StarterGui:SetCore("SendNotification", {
+        Title = "SCRIPT BLOCKED",
+        Text = "This script can only run in the correct game!",
+        Duration = 5
+    })
+    return
+end
+
+task.spawn(function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/DistortionAltFR/sans.rng/refs/heads/main/antiafk.lua"))()
+    print("External scripts loaded successfully.")
+end)
+
+StarterGui:SetCore("SendNotification", {
+    Title = "AUTO-FARM LOADED!",
+    Text = "Made by DistortionAltFR | typical.rng",
+    Button1 = "OK",
+    Duration = 5
+})
+
 local ClickDetectors = setmetatable({}, {__mode = "k"})
 local DetectorMT = {
     __index = {
