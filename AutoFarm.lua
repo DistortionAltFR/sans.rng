@@ -26,27 +26,6 @@ local Tab = Window:CreateTab("AutoClicker", 4483362458)
 -- Create Section
 local Section = Tab:CreateSection("AutoClicker Settings")
 
--- Create Toggle for AutoClick
-local AutoClickToggle = Tab:CreateToggle({
-    Name = "AutoClick",
-    CurrentValue = false,
-    Flag = "AutoClickToggle",
-    Callback = function(Value)
-        Active = Value
-        if Active then
-            AutoClickConnection = RunService.RenderStepped:Connect(function()
-                UpdateDetectors()
-                FireDetectors()
-            end)
-        else
-            if AutoClickConnection then
-                AutoClickConnection:Disconnect()
-                AutoClickConnection = nil
-            end
-        end
-    end,
-})
-
 -- Initialize ClickDetectors
 local ClickDetectors = setmetatable({}, {__mode = "k"})
 local DetectorMT = {
@@ -55,7 +34,7 @@ local DetectorMT = {
             ClickDetectors[self.Instance] = nil
         end,
         Fire = function(self)
-            if self.Instance.Parent then
+            if self.Instance and self.Instance.Parent then
                 fireclickdetector(self.Instance, 1, true)
             end
         end
@@ -84,6 +63,30 @@ local function FireDetectors()
     end
 end
 
+-- Toggle for AutoClick
+local Active = false
+local AutoClickConnection
+
+local AutoClickToggle = Tab:CreateToggle({
+    Name = "AutoClick",
+    CurrentValue = false,
+    Flag = "AutoClickToggle",
+    Callback = function(Value)
+        Active = Value
+        if Active then
+            AutoClickConnection = RunService.RenderStepped:Connect(function()
+                UpdateDetectors()
+                FireDetectors()
+            end)
+        else
+            if AutoClickConnection then
+                AutoClickConnection:Disconnect()
+                AutoClickConnection = nil
+            end
+        end
+    end,
+})
+
 -- Function to disable character touch
 local function DisableCharacterTouch()
     local character = LocalPlayer.Character
@@ -95,32 +98,6 @@ local function DisableCharacterTouch()
         end
     end
 end
-
--- Check if the game is correct
-if game.PlaceId ~= 91694942823334 then
-    Rayfield:Notify({
-        Title = "SCRIPT BLOCKED",
-        Content = "This script can only run in the correct game!",
-        Duration = 5,
-        Image = 4483362458,
-    })
-    return
-end
-
--- Load external scripts
-task.spawn(function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/DistortionAltFR/sans.rng/refs/heads/main/antiafk.lua"))()
-    print("External scripts loaded successfully.")
-end)
-
--- Notify user
-Rayfield:Notify({
-    Title = "AUTO-FARM LOADED!",
-    Content = "Made by DistortionAltFR | typical.rng",
-    Duration = 5,
-    Image = 4483362458,
-})
 
 -- Initialize SansesFolder
 local SansesFolder = workspace:FindFirstChild("Sanses")
@@ -146,3 +123,11 @@ LocalPlayer.CharacterAdded:Connect(DisableCharacterTouch)
 
 -- Initial disable character touch
 DisableCharacterTouch()
+
+-- Notify user
+Rayfield:Notify({
+    Title = "AUTO-FARM LOADED!",
+    Content = "Made by DistortionAltFR | typical.rng",
+    Duration = 5,
+    Image = 4483362458,
+})
