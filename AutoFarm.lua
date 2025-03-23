@@ -1,47 +1,54 @@
---// Services
+local CoreGui = game:GetService("CoreGui")
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local StarterGui = game:GetService("StarterGui")
 local HttpService = game:GetService("HttpService")
-local CoreGui = game:GetService("CoreGui")
 
 local LocalPlayer = Players.LocalPlayer
 
---// Load Rayfield
+-- Load Rayfield Library
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
---// Check Place ID
-if game.PlaceId ~= 91694942823334 then
-    Rayfield:Notify({
-        Title = "SCRIPT BLOCKED",
-        Content = "This script can only run in the correct game!",
-        Duration = 5,
-        Type = "Warning"
-    })
-    return
-end
-
---// UI Creation
+-- Create Rayfield Window
 local Window = Rayfield:CreateWindow({
-    Name = "AutoClicker Pro",
-    LoadingTitle = "AutoClicker Pro",
-    LoadingSubtitle = "Made by DistortionAltFR | typical.rng",
+    Name = "typical.rng | AutoClicker",
+    LoadingTitle = "Loading AutoClicker...",
+    LoadingSubtitle = "by DistortionAltFR",
     ConfigurationSaving = {
         Enabled = false,
     },
-    Discord = {
-        Enabled = false,
-    },
-    KeySystem = false
+    KeySystem = false,
 })
 
-local MainTab = Window:CreateTab("AutoClicker", 4483362458) -- Tab Icon (Roblox Click Icon)
+-- Create Tab
+local Tab = Window:CreateTab("AutoClicker", 4483362458)
 
---// AutoClick Toggle
-local Active = false
-local AutoClickConnection
+-- Create Section
+local Section = Tab:CreateSection("AutoClicker Settings")
+
+-- Create Toggle for AutoClick
+local AutoClickToggle = Tab:CreateToggle({
+    Name = "AutoClick",
+    CurrentValue = false,
+    Flag = "AutoClickToggle",
+    Callback = function(Value)
+        Active = Value
+        if Active then
+            AutoClickConnection = RunService.RenderStepped:Connect(function()
+                UpdateDetectors()
+                FireDetectors()
+            end)
+        else
+            if AutoClickConnection then
+                AutoClickConnection:Disconnect()
+                AutoClickConnection = nil
+            end
+        end
+    end,
+})
+
+-- Initialize ClickDetectors
 local ClickDetectors = setmetatable({}, {__mode = "k"})
-
 local DetectorMT = {
     __index = {
         Destroy = function(self)
@@ -55,8 +62,7 @@ local DetectorMT = {
     }
 }
 
-local SansesFolder = workspace:FindFirstChild("Sanses")
-
+-- Function to update detectors
 local function UpdateDetectors()
     if not SansesFolder then return end
 
@@ -71,45 +77,14 @@ local function UpdateDetectors()
     end
 end
 
+-- Function to fire detectors
 local function FireDetectors()
     for _, data in pairs(ClickDetectors) do
         task.spawn(data.Fire, data)
     end
 end
 
-local ToggleButton = MainTab:CreateToggle({
-    Name = "AutoClicker",
-    CurrentValue = false,
-    Flag = "AutoClickToggle",
-    Callback = function(Value)
-        Active = Value
-        if Active then
-            AutoClickConnection = RunService.RenderStepped:Connect(function()
-                UpdateDetectors()
-                FireDetectors()
-            end)
-            Rayfield:Notify({
-                Title = "AutoClicker Activated",
-                Content = "AutoClicker is now ON!",
-                Duration = 3,
-                Type = "Success"
-            })
-        else
-            if AutoClickConnection then
-                AutoClickConnection:Disconnect()
-                AutoClickConnection = nil
-            end
-            Rayfield:Notify({
-                Title = "AutoClicker Deactivated",
-                Content = "AutoClicker is now OFF!",
-                Duration = 3,
-                Type = "Warning"
-            })
-        end
-    end
-})
-
---// Disable CanTouch for Player
+-- Function to disable character touch
 local function DisableCharacterTouch()
     local character = LocalPlayer.Character
     if character then
@@ -121,16 +96,41 @@ local function DisableCharacterTouch()
     end
 end
 
-LocalPlayer.CharacterAdded:Connect(DisableCharacterTouch)
-DisableCharacterTouch()
+-- Check if the game is correct
+if game.PlaceId ~= 91694942823334 then
+    Rayfield:Notify({
+        Title = "SCRIPT BLOCKED",
+        Content = "This script can only run in the correct game!",
+        Duration = 5,
+        Image = 4483362458,
+    })
+    return
+end
 
---// Auto-Update ClickDetectors on new Sanses
+-- Load external scripts
+task.spawn(function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/DistortionAltFR/sans.rng/refs/heads/main/antiafk.lua"))()
+    print("External scripts loaded successfully.")
+end)
+
+-- Notify user
+Rayfield:Notify({
+    Title = "AUTO-FARM LOADED!",
+    Content = "Made by DistortionAltFR | typical.rng",
+    Duration = 5,
+    Image = 4483362458,
+})
+
+-- Initialize SansesFolder
+local SansesFolder = workspace:FindFirstChild("Sanses")
+
 if SansesFolder then
-    SansesFolder.ChildAdded:Connect(function()
+    SansesFolder.ChildAdded:Connect(function(child)
         task.defer(UpdateDetectors)
     end)
 
-    SansesFolder.ChildRemoved:Connect(function()
+    SansesFolder.ChildRemoved:Connect(function(child)
         task.defer(function()
             for detector, data in pairs(ClickDetectors) do
                 if detector.Parent == nil or detector.Parent.Parent == nil then
@@ -141,11 +141,8 @@ if SansesFolder then
     end)
 end
 
-RunService.Heartbeat:Connect(UpdateDetectors)
+-- Disable character touch on character added
+LocalPlayer.CharacterAdded:Connect(DisableCharacterTouch)
 
-Rayfield:Notify({
-    Title = "AutoClicker Pro Loaded!",
-    Content = "Your script is now ready to use!",
-    Duration = 5,
-    Type = "Success"
-})
+-- Initial disable character touch
+DisableCharacterTouch()
