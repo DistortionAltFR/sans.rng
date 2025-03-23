@@ -45,7 +45,10 @@ local DetectorMT = {
 
 -- Function to update detectors
 local function UpdateDetectors()
-    if not SansesFolder then return end
+    if not SansesFolder then
+        SansesFolder = workspace:FindFirstChild("Sanses") -- Ensure SansesFolder is initialized
+        if not SansesFolder then return end
+    end
 
     for _, sansModel in pairs(SansesFolder:GetChildren()) do
         local clickHitbox = sansModel:FindFirstChild("ClickHitbox")
@@ -87,8 +90,8 @@ local AutoClickToggle = Tab:CreateToggle({
         if Active then
             -- Start the auto-click loop
             AutoClickConnection = RunService.RenderStepped:Connect(function()
-                UpdateDetectors()
-                FireDetectors()
+                UpdateDetectors() -- Update detectors every frame
+                FireDetectors()   -- Fire detectors every frame
             end)
             Rayfield:Notify({
                 Title = "AutoClick Enabled",
@@ -143,14 +146,14 @@ local SansesFolder = workspace:FindFirstChild("Sanses")
 
 if SansesFolder then
     SansesFolder.ChildAdded:Connect(function(child)
-        task.defer(UpdateDetectors)
+        task.defer(UpdateDetectors) -- Update detectors when a new child is added
     end)
 
     SansesFolder.ChildRemoved:Connect(function(child)
         task.defer(function()
             for detector, data in pairs(ClickDetectors) do
                 if detector.Parent == nil or detector.Parent.Parent == nil then
-                    data:Destroy()
+                    data:Destroy() -- Clean up removed detectors
                 end
             end
         end)
