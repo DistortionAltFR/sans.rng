@@ -1,3 +1,5 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
 local CoreGui = game:GetService("CoreGui")
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -6,29 +8,35 @@ local HttpService = game:GetService("HttpService")
 
 local LocalPlayer = Players.LocalPlayer
 
--- Load Rayfield Library
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+local function SendNotification(title, text, duration)
+    Rayfield:Notify({
+        Title = title,
+        Content = text,
+        Duration = duration or 5,
+        Actions = {
+            Ignore = {
+                Name = "OK",
+                Callback = function()
+                    -- Do nothing
+                end
+            }
+        }
+    })
+end
 
--- Create Rayfield Window
-local Window = Rayfield:CreateWindow({
-    Name = "typical.rng | AutoClicker",
-    LoadingTitle = "Loading AutoClicker...",
-    LoadingSubtitle = "by DistortionAltFR",
-    ConfigurationSaving = {
-        Enabled = false,
-    },
-    KeySystem = false,
-})
+if game.PlaceId ~= 91694942823334 then
+    SendNotification("SCRIPT BLOCKED", "This script can only run in the correct game!", 5)
+    return
+end
 
--- Create Tab
-local Tab = Window:CreateTab("AutoClicker", 4483362458) -- Replace with your desired icon ID
+task.spawn(function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/DistortionAltFR/sans.rng/refs/heads/main/antiafk.lua"))()
+    print("External scripts loaded successfully.")
+end)
 
--- Create Section
-local Section = Tab:CreateSection("AutoClicker Settings")
+SendNotification("AUTO-FARM LOADED!", "Made by DistortionAltFR | typical.rng", 5)
 
--- Initialize variables
-local Active = false
-local AutoClickConnection = nil
 local ClickDetectors = setmetatable({}, {__mode = "k"})
 local DetectorMT = {
     __index = {
@@ -43,7 +51,8 @@ local DetectorMT = {
     }
 }
 
--- Function to update detectors
+local SansesFolder = workspace:FindFirstChild("Sanses")
+
 local function UpdateDetectors()
     if not SansesFolder then return end
 
@@ -58,14 +67,12 @@ local function UpdateDetectors()
     end
 end
 
--- Function to fire detectors
 local function FireDetectors()
     for _, data in pairs(ClickDetectors) do
         task.spawn(data.Fire, data)
     end
 end
 
--- Function to disable character touch
 local function DisableCharacterTouch()
     local character = LocalPlayer.Character
     if character then
@@ -77,69 +84,36 @@ local function DisableCharacterTouch()
     end
 end
 
--- Create Toggle for AutoClick
+local Window = Rayfield:CreateWindow({
+    Name = "typical.rng | AutoClicker",
+    LoadingTitle = "typical.rng",
+    LoadingSubtitle = "AutoClicker by DistortionAltFR",
+    ConfigurationSaving = {
+        Enabled = false,
+    },
+    KeySystem = false,
+})
+
+local Tab = Window:CreateTab("Main", 4483362458)
+
 local AutoClickToggle = Tab:CreateToggle({
     Name = "AutoClick",
     CurrentValue = false,
     Flag = "AutoClickToggle",
     Callback = function(Value)
-        Active = Value
-        if Active then
-            -- Start the auto-click loop
+        if Value then
             AutoClickConnection = RunService.RenderStepped:Connect(function()
-                UpdateDetectors() -- Update detectors every frame
-                FireDetectors()   -- Fire detectors every frame
+                UpdateDetectors()
+                FireDetectors()
             end)
-            Rayfield:Notify({
-                Title = "AutoClick Enabled",
-                Content = "AutoClick is now active.",
-                Duration = 3,
-                Image = 4483362458, -- Replace with your desired icon ID
-            })
         else
-            -- Stop the auto-click loop
             if AutoClickConnection then
                 AutoClickConnection:Disconnect()
                 AutoClickConnection = nil
             end
-            Rayfield:Notify({
-                Title = "AutoClick Disabled",
-                Content = "AutoClick is now inactive.",
-                Duration = 3,
-                Image = 4483362458, -- Replace with your desired icon ID
-            })
         end
     end,
 })
-
--- Check if the game is correct
-if game.PlaceId ~= 91694942823334 then
-    Rayfield:Notify({
-        Title = "SCRIPT BLOCKED",
-        Content = "This script can only run in the correct game!",
-        Duration = 5,
-        Image = 4483362458, -- Replace with your desired icon ID
-    })
-    return
-end
-
--- Load external scripts
-task.spawn(function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/DistortionAltFR/sans.rng/refs/heads/main/antiafk.lua"))()
-    print("External scripts loaded successfully.")
-end)
-
--- Notify user
-Rayfield:Notify({
-    Title = "AUTO-FARM LOADED!",
-    Content = "Made by DistortionAltFR | typical.rng",
-    Duration = 5,
-    Image = 4483362458, -- Replace with your desired icon ID
-})
-
--- Initialize SansesFolder
-local SansesFolder = workspace:FindFirstChild("Sanses")
 
 if SansesFolder then
     SansesFolder.ChildAdded:Connect(function(child)
@@ -157,8 +131,6 @@ if SansesFolder then
     end)
 end
 
--- Disable character touch on character added
-LocalPlayer.CharacterAdded:Connect(DisableCharacterTouch)
-
--- Initial disable character touch
+RunService.Heartbeat:Connect(UpdateDetectors)
 DisableCharacterTouch()
+LocalPlayer.CharacterAdded:Connect(DisableCharacterTouch)
