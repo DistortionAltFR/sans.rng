@@ -1,48 +1,47 @@
--- Services
+--// Services
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
-local TweenService = game:GetService("TweenService")
+local StarterGui = game:GetService("StarterGui")
 local HttpService = game:GetService("HttpService")
+local CoreGui = game:GetService("CoreGui")
 
 local LocalPlayer = Players.LocalPlayer
 
--- Prevent execution outside of the intended game
+--// Load Rayfield
+local Rayfield = loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexware/Rayfield/main/source"))()
+
+--// Check Place ID
 if game.PlaceId ~= 91694942823334 then
-    warn("SCRIPT BLOCKED: Incorrect Game")
+    Rayfield:Notify({
+        Title = "SCRIPT BLOCKED",
+        Content = "This script can only run in the correct game!",
+        Duration = 5,
+        Type = "Warning"
+    })
     return
 end
 
--- Load external scripts
-task.spawn(function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/DistortionAltFR/sans.rng/refs/heads/main/antiafk.lua"))()
-    print("External scripts loaded successfully.")
-end)
-
--- Load Rayfield Library
-local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
-if not Rayfield then
-    warn("Failed to load Rayfield UI")
-    return
-end
-
--- Create Window UI
+--// UI Creation
 local Window = Rayfield:CreateWindow({
-    Name = "AutoClickerPro",
-    LoadingTitle = "AutoClicker",
-    LoadingSubtitle = "Optimized for performance",
-    ConfigurationSaving = { Enabled = false },
-    Discord = { Enabled = false }
+    Name = "AutoClicker Pro",
+    LoadingTitle = "AutoClicker Pro",
+    LoadingSubtitle = "Made by DistortionAltFR | typical.rng",
+    ConfigurationSaving = {
+        Enabled = false,
+    },
+    Discord = {
+        Enabled = false,
+    },
+    KeySystem = false
 })
 
--- Single Tab
-local AutoFarmTab = Window:CreateTab("Main")
+local MainTab = Window:CreateTab("AutoClicker", 4483362458) -- Tab Icon (Roblox Click Icon)
 
--- AutoClick Toggle Variable
-local AutoClickActive = false
+--// AutoClick Toggle
+local Active = false
 local AutoClickConnection
-
 local ClickDetectors = setmetatable({}, {__mode = "k"})
+
 local DetectorMT = {
     __index = {
         Destroy = function(self)
@@ -58,52 +57,59 @@ local DetectorMT = {
 
 local SansesFolder = workspace:FindFirstChild("Sanses")
 
--- Function to update ClickDetectors
 local function UpdateDetectors()
     if not SansesFolder then return end
+
     for _, sansModel in pairs(SansesFolder:GetChildren()) do
         local clickHitbox = sansModel:FindFirstChild("ClickHitbox")
         if clickHitbox then
             local clickDetector = clickHitbox:FindFirstChildOfClass("ClickDetector")
             if clickDetector and not ClickDetectors[clickDetector] then
-                ClickDetectors[clickDetector] = setmetatable({ Instance = clickDetector }, DetectorMT)
+                ClickDetectors[clickDetector] = setmetatable({Instance = clickDetector}, DetectorMT)
             end
         end
     end
 end
 
--- Function to fire ClickDetectors
 local function FireDetectors()
     for _, data in pairs(ClickDetectors) do
         task.spawn(data.Fire, data)
     end
 end
 
--- Function to toggle AutoClick
-local function ToggleAutoClick(state)
-    AutoClickActive = state
-    if AutoClickActive then
-        AutoClickConnection = RunService.RenderStepped:Connect(function()
-            UpdateDetectors()
-            FireDetectors()
-        end)
-    else
-        if AutoClickConnection then
-            AutoClickConnection:Disconnect()
-            AutoClickConnection = nil
-        end
-    end
-end
-
--- Add Toggle Button to Rayfield UI
-AutoFarmTab:CreateToggle({
+local ToggleButton = MainTab:CreateToggle({
     Name = "AutoClicker",
     CurrentValue = false,
     Flag = "AutoClickToggle",
-    Callback = ToggleAutoClick
+    Callback = function(Value)
+        Active = Value
+        if Active then
+            AutoClickConnection = RunService.RenderStepped:Connect(function()
+                UpdateDetectors()
+                FireDetectors()
+            end)
+            Rayfield:Notify({
+                Title = "AutoClicker Activated",
+                Content = "AutoClicker is now ON!",
+                Duration = 3,
+                Type = "Success"
+            })
+        else
+            if AutoClickConnection then
+                AutoClickConnection:Disconnect()
+                AutoClickConnection = nil
+            end
+            Rayfield:Notify({
+                Title = "AutoClicker Deactivated",
+                Content = "AutoClicker is now OFF!",
+                Duration = 3,
+                Type = "Warning"
+            })
+        end
+    end
 })
 
--- Disable Character `CanTouch`
+--// Disable CanTouch for Player
 local function DisableCharacterTouch()
     local character = LocalPlayer.Character
     if character then
@@ -115,21 +121,31 @@ local function DisableCharacterTouch()
     end
 end
 
--- Minimized Mode (Draggable Icon)
-local Minimized = false
-local MinimizeButton = Window:CreateButton({
-    Name = "⏷ Minimize UI",
-    Callback = function()
-        Minimized = not Minimized
-        if Minimized then
-            Window:Minimize()
-        else
-            Window:Maximize()
-        end
-    end
-})
-
--- Keep Detectors Updated
-RunService.Heartbeat:Connect(UpdateDetectors)
 LocalPlayer.CharacterAdded:Connect(DisableCharacterTouch)
 DisableCharacterTouch()
+
+--// Auto-Update ClickDetectors on new Sanses
+if SansesFolder then
+    SansesFolder.ChildAdded:Connect(function()
+        task.defer(UpdateDetectors)
+    end)
+
+    SansesFolder.ChildRemoved:Connect(function()
+        task.defer(function()
+            for detector, data in pairs(ClickDetectors) do
+                if detector.Parent == nil or detector.Parent.Parent == nil then
+                    data:Destroy()
+                end
+            end
+        end)
+    end)
+end
+
+RunService.Heartbeat:Connect(UpdateDetectors)
+
+Rayfield:Notify({
+    Title = "AutoClicker Pro Loaded!",
+    Content = "Your script is now ready to use!",
+    Duration = 5,
+    Type = "Success"
+})
