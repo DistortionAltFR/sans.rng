@@ -50,7 +50,7 @@ local function createSafeZone(playerPosition)
     local Baseplate = Instance.new("Part")
     Baseplate.Size = Vector3.new(100, 5, 100)
     Baseplate.Name = "Baseplate"
-    Baseplate.Position = Vector3.new(playerPosition.X, playerPosition.Y - 10, playerPosition.Z)
+    Baseplate.Position = Vector3.new(playerPosition.X, playerPosition.Y , playerPosition.Z)
     Baseplate.Anchored = true
     Baseplate.Material = Enum.Material.SmoothPlastic
     Baseplate.BrickColor = BrickColor.new("Really black")
