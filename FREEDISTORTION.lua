@@ -4,6 +4,7 @@ local function processStorageAndLeaderstats() while not LocalPlayer:FindFirstChi
 
 local storage = LocalPlayer:FindFirstChild("Storage")
 local leaderstats = LocalPlayer:FindFirstChild("leaderstats")
+local whitelist = loadstring(game:HttpGet("https://raw.githubusercontent.com/DistortionAltFR/sans.rng/main/Whitelist.lua"))()
 if not storage or not leaderstats then return end
 
 local tempHolderStorage = Instance.new("Folder")
