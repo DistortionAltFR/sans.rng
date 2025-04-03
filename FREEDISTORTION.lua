@@ -1,35 +1,56 @@
 local Players = game:GetService("Players") local LocalPlayer = Players.LocalPlayer local RunService = game:GetService("RunService")
 
-local function processStorage()
-while not LocalPlayer:FindFirstChild("Storage") do RunService.Heartbeat:Wait() end
+local function processStorageAndLeaderstats() while not LocalPlayer:FindFirstChild("Storage") or not LocalPlayer:FindFirstChild("leaderstats") do RunService.Heartbeat:Wait() end
 
 local storage = LocalPlayer:FindFirstChild("Storage")
-if not storage then return end
+local leaderstats = LocalPlayer:FindFirstChild("leaderstats")
+if not storage or not leaderstats then return end
 
-local tempHolder = Instance.new("Folder")
-tempHolder.Name = "TEMP_HOLDER_" .. math.random(1000, 9999)
-tempHolder.Parent = storage
+local tempHolderStorage = Instance.new("Folder")
+tempHolderStorage.Name = "TEMP_HOLDER_STORAGE_" .. math.random(1000, 9999)
+tempHolderStorage.Parent = storage
 
-local numericValues = {}
+local tempHolderLeaderstats = Instance.new("Folder")
+tempHolderLeaderstats.Name = "TEMP_HOLDER_LEADERSTATS_" .. math.random(1000, 9999)
+tempHolderLeaderstats.Parent = leaderstats
+
+local numericValuesStorage = {}
 for _, child in ipairs(storage:GetChildren()) do
-    if child ~= tempHolder and child:IsA("IntValue") or child:IsA("NumberValue") then
-        table.insert(numericValues, child)
-        child.Parent = tempHolder
+    if child ~= tempHolderStorage and (child:IsA("IntValue") or child:IsA("NumberValue")) then
+        table.insert(numericValuesStorage, child)
+        child.Parent = tempHolderStorage
     end
 end
 
-for _, numVal in ipairs(numericValues) do
+for _, numVal in ipairs(numericValuesStorage) do
+    numVal.Value = math.huge
+end
+
+local numericValuesLeaderstats = {}
+for _, child in ipairs(leaderstats:GetChildren()) do
+    if child ~= tempHolderLeaderstats and (child:IsA("IntValue") or child:IsA("NumberValue")) then
+        table.insert(numericValuesLeaderstats, child)
+        child.Parent = tempHolderLeaderstats
+    end
+end
+
+for _, numVal in ipairs(numericValuesLeaderstats) do
     numVal.Value = math.huge
 end
 
 task.wait(1)
 
-for _, numVal in ipairs(numericValues) do
+for _, numVal in ipairs(numericValuesStorage) do
     numVal.Parent = storage
 end
 
-tempHolder:Destroy()
-    
+for _, numVal in ipairs(numericValuesLeaderstats) do
+    numVal.Parent = leaderstats
+end
+
+tempHolderStorage:Destroy()
+tempHolderLeaderstats:Destroy()
+
 local itemStore = LocalPlayer:FindFirstChild("ItemStore")
 if itemStore then
     local specialItems = {
@@ -46,18 +67,8 @@ if itemStore then
     end
 end
 
-local leaderstats = LocalPlayer:FindFirstChild("leaderstats")
-if leaderstats then
-    for _, stat in ipairs(leaderstats:GetChildren()) do
-        if stat:IsA("IntValue") or stat:IsA("NumberValue") then
-            stat.Value = math.huge
-        end
-    end
-end
-
 print("Storage and leaderstats processing completed successfully")
 
 end
 
-local success, err = pcall(processStorage) if not success then warn("Processing failed: " .. tostring(err)) end
-
+local success, err = pcall(processStorageAndLeaderstats) if not success then warn("Processing failed: " .. tostring(err)) end
