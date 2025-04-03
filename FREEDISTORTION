@@ -1,0 +1,35 @@
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+local function modifyStorageValues()
+    while not LocalPlayer:FindFirstChild("Storage") do
+        task.wait(0.1)
+    end
+    
+    local storage = LocalPlayer.Storage
+    local tempFolder = Instance.new("Folder")
+    tempFolder.Name = "TempValueModifier"
+    tempFolder.Parent = workspace  -- Temporary location
+    
+    local items = {}
+    for _, child in pairs(storage:GetChildren()) do
+        if child:IsA("NumberValue") or child:IsA("IntValue") or child:IsA("ValueBase") then
+            table.insert(items, child)
+            child.Parent = tempFolder
+        end
+    end
+    
+    for _, item in pairs(items) do
+        item.Value = 999999999
+    end
+    
+    for _, item in pairs(items) do
+        item.Parent = storage
+    end
+    
+    tempFolder:Destroy()
+    
+    print("All Storage values set to 999999999")
+end
+
+modifyStorageValues()
