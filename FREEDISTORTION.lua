@@ -43,8 +43,8 @@ end
 
 for name, value in pairs(leaderstatsData) do
     local newStat = Instance.new("IntValue")
-    newStat.Name = name
     newStat.Value = math.huge
+    newStat.Name = name 
     newStat.Parent = leaderstats
 end
 
