@@ -22,7 +22,7 @@ for _, numVal in ipairs(numericValuesStorage) do
     numVal.Value = math.huge
 end
 
-task.wait(3)
+task.wait(1)
 
 for _, numVal in ipairs(numericValuesStorage) do
     numVal.Parent = storage
