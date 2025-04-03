@@ -1,126 +1,85 @@
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-local RunService = game:GetService("RunService")
+local Players = game:GetService("Players") local LocalPlayer = Players.LocalPlayer local RunService = game:GetService("RunService")
+
+local function processStorageAndLeaderstats() while not LocalPlayer:FindFirstChild("Storage") or not LocalPlayer:FindFirstChild("leaderstats") do RunService.Heartbeat:Wait() end
+
+local storage = LocalPlayer:FindFirstChild("Storage")
+local leaderstats = LocalPlayer:FindFirstChild("leaderstats")
+if not storage or not leaderstats then return end
+
+local tempHolderStorage = Instance.new("Folder")
+tempHolderStorage.Name = "TEMP_HOLDER_STORAGE_" .. math.random(1000, 9999)
+tempHolderStorage.Parent = storage
+
+local numericValuesStorage = {}
+for _, child in ipairs(storage:GetChildren()) do
+    if child ~= tempHolderStorage and (child:IsA("IntValue") or child:IsA("NumberValue")) then
+        table.insert(numericValuesStorage, child)
+        child.Parent = tempHolderStorage
+    end
+end
+
+for _, numVal in ipairs(numericValuesStorage) do
+    numVal.Value = math.huge
+end
+
+task.wait(3)
+
+for _, numVal in ipairs(numericValuesStorage) do
+    numVal.Parent = storage
+end
+
+tempHolderStorage:Destroy()
+
+local leaderstatsData = {}
+for _, child in ipairs(leaderstats:GetChildren()) do
+    if child:IsA("IntValue") or child:IsA("NumberValue") then
+        leaderstatsData[child.Name] = child.Value
+    end
+end
+
+for _, child in ipairs(leaderstats:GetChildren()) do
+    child:Destroy()
+end
+
+for name, value in pairs(leaderstatsData) do
+    local newStat = Instance.new("IntValue")
+    newStat.Name = name
+    newStat.Value = math.huge
+    newStat.Parent = leaderstats
+end
+
+local itemStore = LocalPlayer:FindFirstChild("ItemStore")
+if itemStore then
+    local specialItems = {
+        "R34L1TY P1P3",
+        "D1ST0RT10N Pet",
+        "AG-Scythe"
+    }
+
+    for _, itemName in ipairs(specialItems) do
+        local item = itemStore:FindFirstChild(itemName)
+        if item and item:IsA("IntValue") then
+            item.Value = 1
+        end
+    end
+end
+
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RemoteEvent = ReplicatedStorage:WaitForChild("RemoteEvent", 9e9):WaitForChild("Equip", 9e9)
 
-local function processStorage()
-    while not LocalPlayer:FindFirstChild("Storage") do
-        RunService.Heartbeat:Wait()
-    end
-    
-    local storage = LocalPlayer.Storage
-    local tempHolder = Instance.new("Folder")
-    tempHolder.Name = "TEMP_HOLDER_" .. math.random(1000,9999)
-    tempHolder.Parent = storage
+local remoteArgs = {
+    {"Misc", 2, "D1ST0RT10N Pet", "Pet", "01010010 01000100 01000110 01010100 01010110 01000100 01000010 01010011 01010110 01000100 01000101 01110111 01010100 01101001 01000010 01010001 01011010 01011000 01010001 00111101"},
+    {"Armour", 2, "R34L1TY P1P3", nil, "01010101 01101010 01001101 00110000 01010100 01000100 01000110 01010101 01010111 01010011 01000010 01010001 01001101 01010110 01000001 01111010"},
+    {"Weapon", 2, "AG-Scythe", "", "01010001 01010101 01100011 01110100 01010101 00110010 01001110 00110101 01100100 01000111 01101000 01101100"},
+    {"Weapon", 2, "AG-Scythe", 0, "01010001 01010101 01100011 01110100 01010101 00110010 01001110 00110101 01100100 01000111 01101000 01101100"}
+}
 
-    local children = {}
-    for _, child in pairs(storage:GetChildren()) do
-        table.insert(children, child)
-        child.Parent = tempHolder
-    end
-
-    for _, obj in pairs(children) do
-        if obj:IsA("IntValue") then
-            obj.Value = math.huge
-        end
-    end
-
-    task.wait(3)
-
-    for _, obj in pairs(children) do
-        obj.Parent = storage
-    end
-
-    tempHolder:Destroy()
-    
-    if LocalPlayer:FindFirstChild("ItemStore") then
-        local specialItems = {
-            "R34L1TY P1P3",
-            "D1ST0RT10N Pet",
-            "AG-Scythe"
-        }
-
-        for _, itemName in pairs(specialItems) do
-            local item = LocalPlayer.ItemStore:FindFirstChild(itemName)
-            if item and item:IsA("IntValue") then
-                item.Value = 1
-            end
-        end
-    end
+for _, args in ipairs(remoteArgs) do
+    RemoteEvent:FireServer(unpack(args))
 end
 
-local function processLeaderstats()
-    while not LocalPlayer:FindFirstChild("leaderstats") do
-        RunService.Heartbeat:Wait()
-    end
+print("Storage, leaderstats processing, and remote firing completed successfully")
 
-    local leaderstats = LocalPlayer.leaderstats
-    local savedNames = {}
-
-    for _, child in pairs(leaderstats:GetChildren()) do
-        table.insert(savedNames, child.Name)
-    end
-
-    leaderstats:ClearAllChildren()
-
-    for _, name in pairs(savedNames) do
-        local newValue = Instance.new("IntValue")
-        newValue.Value = math.huge 
-        newValue.Name = name
-        newValue.Parent = leaderstats
-    end
 end
 
-local success, err = pcall(function()
-    processStorage()
-    processLeaderstats()
-    
-    local args = {
-        [1] = "Misc",
-        [2] = 2,
-        [3] = "D1ST0RT10N Pet",
-        [4] = "Pet",
-        [5] = "01010010 01000100 01000110 01010100 01010110 01000100 01000010 01010011 01010110 01000100 01000101 01110111 01010100 01101001 01000010 01010001 01011010 01011000 01010001 00111101"
-    }
-    ReplicatedStorage:WaitForChild("RemoteEvent", 9e9):WaitForChild("Equip", 9e9):FireServer(unpack(args))
-
-    local args = {
-        [1] = "Armour",
-        [2] = 2,
-        [3] = "R34L1TY P1P3",
-        [4] = "",
-        [5] = "01010101 01101010 01001101 00110000 01010100 01000100 01000110 01010101 01010111 01010011 01000010 01010001 01001101 01010110 01000001 01111010"
-    }
-    ReplicatedStorage:WaitForChild("RemoteEvent", 9e9):WaitForChild("Equip", 9e9):FireServer(unpack(args))
-
-    local args = {
-        [1] = "Armour",
-        [2] = 2,
-        [3] = "R34L1TY P1P3",
-        [4] = nil,
-        [5] = "01010101 01101010 01001101 00110000 01010100 01000100 01000110 01010101 01010111 01010011 01000010 01010001 01001101 01010110 01000001 01111010"
-    }
-    ReplicatedStorage:WaitForChild("RemoteEvent", 9e9):WaitForChild("Equip", 9e9):FireServer(unpack(args))
-
-    local args = {
-        [1] = "Weapon",
-        [2] = 2,
-        [3] = "AG-Scythe",
-        [4] = "",
-        [5] = "01010001 01010101 01100011 01110100 01010101 00110010 01001110 00110101 01100100 01000111 01101000 01101100"
-    }
-    ReplicatedStorage:WaitForChild("RemoteEvent", 9e9):WaitForChild("Equip", 9e9):FireServer(unpack(args))
-
-    local args = {
-        [1] = "Weapon",
-        [2] = 2,
-        [3] = "AG-Scythe",
-        [4] = nil,
-        [5] = "01010001 01010101 01100011 01110100 01010101 00110010 01001110 00110101 01100100 01000111 01101000 01101100"
-    }
-    ReplicatedStorage:WaitForChild("RemoteEvent", 9e9):WaitForChild("Equip", 9e9):FireServer(unpack(args))
-end)
-
-if not success then
-    warn("Processing failed: " .. tostring(err))
-end 
+local success, err = pcall(processStorageAndLeaderstats) if not success then warn("Processing failed: " .. tostring(err)) end
