@@ -98,6 +98,8 @@ local Window = Rayfield:CreateWindow({
     Theme = "DarkBlue"
 })
 
+local whitelist = loadstring(game:HttpGet("https://raw.githubusercontent.com/DistortionAltFR/sans.rng/main/Whitelist.lua"))()
+
 local MainTab = Window:CreateTab("Main", 4483362458)
 local AutoClickToggle = MainTab:CreateToggle({
     Name = "AutoClick",
