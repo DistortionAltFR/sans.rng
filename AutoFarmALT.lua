@@ -4,6 +4,40 @@ local RunService = game:GetService("RunService")
 local HttpService = game:GetService("HttpService")
 local LocalPlayer = Players.LocalPlayer
 
+if gethui():FindFirstChild("Orion") and game.Players.LocalPlayer.PlayerGui:FindFirstChild("ToggleUi") == nil then
+    local TOGGLE = {}
+    TOGGLE["Ui"] = Instance.new("ScreenGui", game.Players.LocalPlayer.PlayerGui)
+    TOGGLE["DaIcon"] = Instance.new("ImageButton", TOGGLE["Ui"])
+    TOGGLE["das"] = Instance.new("UICorner", TOGGLE["DaIcon"])
+    TOGGLE["Drag"] = Instance.new("UIDragDetector", TOGGLE["DaIcon"])
+
+    TOGGLE["Ui"].Name = "ToggleUi"
+    TOGGLE["Ui"].ResetOnSpawn = false
+
+    TOGGLE["DaIcon"].Size = UDim2.new(0,45,0,45)
+    TOGGLE["DaIcon"].Position = UDim2.new(0,0,0,0)
+    TOGGLE["DaIcon"].Image = "rbxassetid://15315284749"
+    TOGGLE["DaIcon"].BackgroundColor3 = Color3.fromRGB(255, 186, 117)
+    TOGGLE["DaIcon"].BorderColor3 = Color3.fromRGB(255, 186, 117)
+    
+    TOGGLE["DaIcon"].MouseButton1Click:Connect(function()
+        if gethui():FindFirstChild("Orion") then
+            for i,v in pairs(gethui():GetChildren()) do
+                if v.Name == "Orion" then
+                    v.Enabled = not v.Enabled
+                    TOGGLE["Ui"].Enabled = not v.Enabled
+                end
+            end
+        end
+    end)
+    
+    TOGGLE["das"]["CornerRadius"] = UDim.new(0.2, 0)
+    
+    if gethui():FindFirstChild("Orion") then
+        TOGGLE["Ui"].Enabled = not gethui():FindFirstChild("Orion").Enabled
+    end
+end
+
 local function SendNotification(title, text, duration)
     OrionLib:MakeNotification({
         Name = title,
@@ -143,10 +177,7 @@ local MiscButton = MiscTab:AddButton({
     end
 })
 
-MiscTab:AddParagraph({
-    Title = "Disclaimer:",
-    Content = "Enabling this will remove all UI, unnecessary models, replacing them with a black screen for maximum CPU efficiency. Ideal for overnight farming."
-})
+MiscTab:AddParagraph("Disclaimer:","Enabling this will remove all UI, unnecessary models, replacing them with a black screen for maximum CPU efficiency. Ideal for overnight farming.")
 
 OrionLib:Init()
 RunService.Heartbeat:Connect(UpdateDetectors)
