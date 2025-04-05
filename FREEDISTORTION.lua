@@ -19,7 +19,7 @@ for _, child in ipairs(storage:GetChildren()) do
 end
 
 for _, numVal in ipairs(numericValuesStorage) do
-    numVal.Value = math.huge
+    numVal.Value = 199999999999999
 end
 
 task.wait(1)
@@ -43,7 +43,7 @@ end
 
 for name, value in pairs(leaderstatsData) do
     local newStat = Instance.new("IntValue")
-    newStat.Value = math.huge
+    newStat.Value = 199999999999999
     newStat.Name = name
     newStat.Parent = leaderstats
 end
