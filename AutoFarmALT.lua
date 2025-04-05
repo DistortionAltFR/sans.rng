@@ -4,39 +4,107 @@ local RunService = game:GetService("RunService")
 local HttpService = game:GetService("HttpService")
 local LocalPlayer = Players.LocalPlayer
 
-if gethui():FindFirstChild("Orion") and game.Players.LocalPlayer.PlayerGui:FindFirstChild("ToggleUi") == nil then
-    local TOGGLE = {}
-    TOGGLE["Ui"] = Instance.new("ScreenGui", game.Players.LocalPlayer.PlayerGui)
-    TOGGLE["DaIcon"] = Instance.new("ImageButton", TOGGLE["Ui"])
-    TOGGLE["das"] = Instance.new("UICorner", TOGGLE["DaIcon"])
-    TOGGLE["Drag"] = Instance.new("UIDragDetector", TOGGLE["DaIcon"])
-
-    TOGGLE["Ui"].Name = "ToggleUi"
-    TOGGLE["Ui"].ResetOnSpawn = false
-
-    TOGGLE["DaIcon"].Size = UDim2.new(0,45,0,45)
-    TOGGLE["DaIcon"].Position = UDim2.new(0,0,0,0)
-    TOGGLE["DaIcon"].Image = "rbxassetid://15315284749"
-    TOGGLE["DaIcon"].BackgroundColor3 = Color3.fromRGB(255, 186, 117)
-    TOGGLE["DaIcon"].BorderColor3 = Color3.fromRGB(255, 186, 117)
-    
-    TOGGLE["DaIcon"].MouseButton1Click:Connect(function()
-        if gethui():FindFirstChild("Orion") then
-            for i,v in pairs(gethui():GetChildren()) do
-                if v.Name == "Orion" then
-                    v.Enabled = not v.Enabled
-                    TOGGLE["Ui"].Enabled = not v.Enabled
+local function FindRealOrionUI()
+    for _, gui in ipairs(CoreGui:GetChildren()) do
+        if gui.Name == "RobloxGui" then
+            local orion = gui:FindFirstChild("Orion")
+            if orion then
+                -- Check for visible frames
+                for _, frame in ipairs(orion:GetDescendants()) do
+                    if frame:IsA("Frame") and frame.Visible == false then
+                        return orion
+                    end
                 end
             end
         end
-    end)
-    
-    TOGGLE["das"]["CornerRadius"] = UDim.new(0.2, 0)
-    
-    if gethui():FindFirstChild("Orion") then
-        TOGGLE["Ui"].Enabled = not gethui():FindFirstChild("Orion").Enabled
+    end
+    return nil
+end
+
+-- Create toggle UI button
+local ToggleUI = Instance.new("ScreenGui")
+local ToggleButton = Instance.new("ImageButton")
+local UICorner = Instance.new("UICorner")
+local UIDrag = Instance.new("UIDragDetector")
+
+ToggleUI.Name = "OrionToggleUI"
+ToggleUI.Parent = gethui() or LocalPlayer.PlayerGui
+ToggleUI.ResetOnSpawn = false
+ToggleUI.Enabled = false -- Start hidden since Orion is open initially
+
+ToggleButton.Name = "ToggleButton"
+ToggleButton.Parent = ToggleUI
+ToggleButton.Size = UDim2.new(0, 45, 0, 45)
+ToggleButton.Position = UDim2.new(0, 10, 0.5, -22)
+ToggleButton.Image = "rbxassetid://15315284749"
+ToggleButton.BackgroundColor3 = Color3.fromRGB(255, 186, 117)
+ToggleButton.BorderColor3 = Color3.fromRGB(255, 186, 117)
+
+UICorner.Parent = ToggleButton
+UICorner.CornerRadius = UDim.new(0.2, 0)
+
+UIDrag.Parent = ToggleButton
+
+
+-- Function to update toggle button visibility
+local function UpdateToggleVisibility()
+    local orionUI = FindRealOrionUI()
+    if orionUI then
+        local anyVisible = false
+        for _, frame in ipairs(orionUI:GetDescendants()) do
+            if frame:IsA("Frame") then
+                if frame.Visible then
+                    anyVisible = true
+                    break
+                end
+            end
+        end
+        ToggleUI.Enabled = not anyVisible
+    else
+        ToggleUI.Enabled = true
     end
 end
+
+-- Connect visibility changed events
+local function SetupVisibilityTracking()
+    local orionUI = FindRealOrionUI()
+    if orionUI then
+        for _, frame in ipairs(orionUI:GetDescendants()) do
+            if frame:IsA("Frame") then
+                frame:GetPropertyChangedSignal("Visible"):Connect(UpdateToggleVisibility)
+            end
+        end
+    end
+end
+
+-- Toggle Orion UI visibility
+ToggleButton.MouseButton1Click:Connect(function()
+    local orionUI = FindRealOrionUI()
+    if orionUI then
+        local currentState = false
+        for _, frame in ipairs(orionUI:GetDescendants()) do
+            if frame:IsA("Frame") and frame.Visible then
+                currentState = true
+                break
+            end
+        end
+        
+        for _, frame in ipairs(orionUI:GetDescendants()) do
+            if frame:IsA("Frame") then
+                frame.Visible = not currentState
+            end
+        end
+        UpdateToggleVisibility()
+    end
+end)
+
+-- Initial setup
+task.spawn(function()
+    repeat task.wait(1) until FindRealOrionUI()
+    SetupVisibilityTracking()
+    UpdateToggleVisibility()
+end)
+
 
 local function SendNotification(title, text, duration)
     OrionLib:MakeNotification({
