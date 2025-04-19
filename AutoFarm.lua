@@ -12,8 +12,19 @@ local function SendNotification(title, text, duration)
     })
 end
 
-if game.PlaceId ~= 91694942823334 then
-    SendNotification("SCRIPT BLOCKED", "This script can only run in the correct game!", 5)
+local MAIN_PLACE_ID = 91694942823334
+local ALT_PLACE_IDS = {
+    [87841196505389] = true,
+    [99198920478418] = true,
+    [82501772303548] = true
+}
+
+if ALT_PLACE_IDS[game.PlaceId] then
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/DistortionAltFR/sans.rng/refs/heads/main/AUTOTI.lua"))()
+    SendNotification("ALT PLACE LOADED", "Loaded AUTOTI.lua for this place.", 5)
+    return
+elseif game.PlaceId ~= MAIN_PLACE_ID then
+    SendNotification("SCRIPT BLOCKED", "This script can only run in supported games!", 5)
     return
 end
 
