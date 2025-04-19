@@ -3,21 +3,19 @@ local Workspace = game:GetService("Workspace")
 local RunService = game:GetService("RunService")  
 local StarterGui = game:GetService("StarterGui")  
 
--- Configuration  
 local TARGET_PLACE_IDS = {  
-    87841196505389, -- THE UNIVERSE/DISTORTION PLACE  
-    99198920478418  -- TRUE BARRIER/TRUE INSANITY PLACE  
+    87841196505389,
+    99198920478418, 
+    82501772303548
 }  
 
 local DESTROY_FOLDERS = {"Attacks", "AttacksStuff"}  
 local FIGHT_BUTTON_NAME = "FightButton"  
 
--- System Initialization  
 local LocalPlayer = Players.LocalPlayer  
 local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()  
 local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")  
 
--- Core Functions  
 local function sendNotification(title, message)  
     StarterGui:SetCore("SendNotification", {  
         Title = title,  
@@ -73,8 +71,7 @@ end
 
 local function autoClickVoteButton()  
     if clickAllButtons() then return true end  
-
-    -- Retry on Heartbeat if no buttons were found initially  
+    
     local voteChecker  
     voteChecker = RunService.Heartbeat:Connect(function()  
         if clickAllButtons() then  
