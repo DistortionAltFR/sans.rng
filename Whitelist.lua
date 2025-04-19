@@ -1,46 +1,47 @@
+-- Full identity spoof script
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
-local WHITELIST = {
-    "Nicegail2222ALT",
-    "MaybeV3n",
-    "Akoiiv",
-    "bro_gaming26",
-    "ImADankMemeXD",
-    "WolfTalks",
-    "saadgame26z",
-    "bibeo1j",
-    "Hog_RiderGamer",
-    "TheTrueSigmaOfAllat",
-    "Mihail_dmitrovich",
-    "Nekomat3Okayu",
-    "dldPwnsd123123",
-    "utrsezeg",
-    "BEEM3020",
-    "i_idkfrfr123testalt",
-    "chaosfloo12"
-}
+-- Target spoofed identity
+local SPOOFED_NAME = "Nicegail2222ALT"
 
-local randomUser = WHITELIST[math.random(1, #WHITELIST)]
-print("Selected whitelisted user:", randomUser)
-
+-- Backup original names (just in case)
 local originalName = LocalPlayer.Name
-local originalDisplay = LocalPlayer.DisplayName
+local originalDisplayName = LocalPlayer.DisplayName
 
+-- Get and hook the raw metatable
 local mt = getrawmetatable(game)
-local oldIndex = mt.__index
 setreadonly(mt, false)
+
+local oldIndex = mt.__index
 
 mt.__index = newcclosure(function(self, key)
     if self == LocalPlayer then
-        if key == "Name" then
-            return randomUser
-        elseif key == "DisplayName" then
-            return randomUser
+        if key == "Name" or key == "DisplayName" then
+            return SPOOFED_NAME
         end
     end
+
+    -- Character name spoof
+    if typeof(self) == "Instance" and self:IsA("Model") and self == LocalPlayer.Character then
+        if key == "Name" then
+            return SPOOFED_NAME
+        end
+    end
+
     return oldIndex(self, key)
 end)
 
 setreadonly(mt, true)
-print("Spoofed LocalPlayer as:", randomUser)
+print("Successfully spoofed name to:", SPOOFED_NAME)
+
+-- Hook character name on spawn
+LocalPlayer.CharacterAdded:Connect(function(char)
+    task.wait(1) -- Wait for character to load
+    char.Name = SPOOFED_NAME
+end)
+
+-- If character already exists, spoof it immediately
+if LocalPlayer.Character then
+    LocalPlayer.Character.Name = SPOOFED_NAME
+end
