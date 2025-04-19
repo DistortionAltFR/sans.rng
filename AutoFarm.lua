@@ -86,8 +86,6 @@ local Window = OrionLib:MakeWindow({
     ConfigFolder = "typical.rng"
 })
 
-local whitelist = loadstring(game:HttpGet("https://raw.githubusercontent.com/DistortionAltFR/sans.rng/main/Whitelist.lua"))()
-
 local MainTab = Window:MakeTab({
     Name = "Main",
     Icon = "rbxassetid://4483362458",
