@@ -1,9 +1,9 @@
 local Players = game:GetService("Players")  
 local Workspace = game:GetService("Workspace")  
 local RunService = game:GetService("RunService")  
-local StarterGui = game:GetService("StarterGui")  
+local StarterGui = game:GetService("StarterGui")
+local antiafk = loadstring(game:HttpGet("https://raw.githubusercontent.com/DistortionAltFR/sans.rng/refs/heads/main/Antiafk.lua"))() 
 local antilag = loadstring(game:HttpGet("https://raw.githubusercontent.com/DistortionAltFR/sans.rng/refs/heads/main/Antilag.lua"))()
-local antiafk = loadstring(game:HttpGet("https://raw.githubusercontent.com/DistortionAltFR/sans.rng/refs/heads/main/Antiafk.lua"))()
 local antikick = loadstring(game:HttpGet("https://raw.githubusercontent.com/DistortionAltFR/sans.rng/refs/heads/main/Antikick.lua"))()
 local TARGET_PLACE_IDS = {  
     87841196505389,
