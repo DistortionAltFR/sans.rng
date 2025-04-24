@@ -25,7 +25,7 @@ task.spawn(function()
     print("External scripts loaded successfully.")
 end)
 
-SendNotification("AUTO-FARM LOADED!", "Made by DistortionAltFR | Crazy Skeleton Ramdomizer", 5)
+SendNotification("AUTO-FARM LOADED!", "Made by DistortionAltFR | Crazy Skeleton Randomizer", 5)
 
 local ClickDetectors = setmetatable({}, {__mode = "k"})
 local DetectorMT = {
@@ -41,8 +41,7 @@ local DetectorMT = {
     }
 }
 
-local EntitiesFolder = workspace:FindFirstChild("UniqueSystems", true)
-                          and workspace.UniqueSystems:FindFirstChild("Entities", true)
+local EntitiesFolder = workspace:FindFirstChild("Entities")
 
 local function UpdateDetectors()
     if not EntitiesFolder then return end
@@ -85,10 +84,10 @@ local function DisableCharacterTouch()
 end
 
 local Window = OrionLib:MakeWindow({
-    Name = "typical.rng | Easy Farm",
+    Name = "Crazy Skeleton Randomizer | Easy Farm",
     HidePremium = false,
     SaveConfig = true,
-    ConfigFolder = "typical.rng"
+    ConfigFolder = "CrazySkeletonRandomizer"
 })
 
 local MainTab = Window:MakeTab({
@@ -132,23 +131,7 @@ CreditsTab:AddSection({
 CreditsTab:AddLabel("Version: 1.0")
 CreditsTab:AddLabel("Made by DistortionAltFR")
 
-local MiscTab = Window:MakeTab({
-    Name = "Misc",
-    Icon = "rbxassetid://4483362458",
-    PremiumOnly = false
-})
-
-local MiscButton = MiscTab:AddButton({
-    Name = "Grinding Mode",
-    Callback = function()
-        SendNotification("Grinding Mode Activated", "Enjoy.", 3)
-        loadstring(game:HttpGet('https://raw.githubusercontent.com/DistortionAltFR/sans.rng/refs/heads/main/ExtremeGrindMode.lua'))()
-    end
-})
-
-MiscTab:AddParagraph("Disclaimer:","Enabling this will remove all UI, unnecessary models, replacing them with a black screen for maximum CPU efficiency. Ideal for overnight farming.")
-
 OrionLib:Init()
 RunService.Heartbeat:Connect(UpdateDetectors)
 DisableCharacterTouch()
-LocalPlayer.CharacterAdded:Connect(DisableCharacterTouch) 
+LocalPlayer.CharacterAdded:Connect(DisableCharacterTouch)
