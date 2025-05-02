@@ -25,7 +25,7 @@ task.spawn(function()
     print("External scripts loaded successfully.")
 end)
 
-SendNotification("AUTO-FARM LOADED!", "Made by DistortionAltFR | Crazy Skeleton Randomizer", 5)
+SendNotification("AUTO-FARM LOADED!", "Made by DistortionAltFR | JUST RNG", 5)
 
 local ClickDetectors = setmetatable({}, {__mode = "k"})
 local DetectorMT = {
@@ -41,7 +41,7 @@ local DetectorMT = {
     }
 }
 
-local EntitiesFolder = workspace:FindFirstChild("Entities")
+local EntitiesFolder = workspace:FindFirstChild("Sans")
 
 local function UpdateDetectors()
     if not EntitiesFolder then return end
@@ -53,8 +53,6 @@ local function UpdateDetectors()
     end
     
     for _, entity in pairs(EntitiesFolder:GetChildren()) do
-        local model = entity:FindFirstChild("Model")
-        if model then
             local mainPart = model:FindFirstChild("Main")
             if mainPart then
                 local clickDetector = mainPart:FindFirstChildOfClass("ClickDetector")
@@ -84,7 +82,7 @@ local function DisableCharacterTouch()
 end
 
 local Window = OrionLib:MakeWindow({
-    Name = "Crazy Skeleton Randomizer | Easy Farm",
+    Name = "JUST RNG| Easy Farm",
     HidePremium = false,
     SaveConfig = true,
     ConfigFolder = "CrazySkeletonRandomizer"
