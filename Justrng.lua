@@ -12,7 +12,7 @@ local function SendNotification(title, text, duration)
     })
 end
 
-local MAIN_PLACE_ID = 114283239905753
+local MAIN_PLACE_ID = 124274377528795
 
 if game.PlaceId ~= MAIN_PLACE_ID then
     SendNotification("SCRIPT BLOCKED", "This script can only run in supported games!", 5)
