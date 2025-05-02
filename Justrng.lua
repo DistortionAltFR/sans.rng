@@ -53,12 +53,11 @@ local function UpdateDetectors()
     end
     
     for _, entity in pairs(EntitiesFolder:GetChildren()) do
-            local mainPart = model:FindFirstChild("Main")
-            if mainPart then
-                local clickDetector = mainPart:FindFirstChildOfClass("ClickDetector")
-                if clickDetector and not ClickDetectors[clickDetector] then
-                    ClickDetectors[clickDetector] = setmetatable({Instance = clickDetector}, DetectorMT)
-                end
+        local mainPart = entity:FindFirstChild("Main")
+        if mainPart then
+            local clickDetector = mainPart:FindFirstChildOfClass("ClickDetector")
+            if clickDetector and not ClickDetectors[clickDetector] then
+                ClickDetectors[clickDetector] = setmetatable({Instance = clickDetector}, DetectorMT)
             end
         end
     end
@@ -132,4 +131,4 @@ CreditsTab:AddLabel("Made by DistortionAltFR")
 OrionLib:Init()
 RunService.Heartbeat:Connect(UpdateDetectors)
 DisableCharacterTouch()
-LocalPlayer.CharacterAdded:Connect(DisableCharacterTouch)
+LocalPlayer.CharacterAdded:Connect(DisableCharacterTouch) 
