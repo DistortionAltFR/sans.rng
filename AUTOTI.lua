@@ -95,30 +95,23 @@ local function setupFightTeleport()
         sendNotification("TELEPORT", "Moved to fight position!")  
     end  
 
-    -- Handle existing targets  
     for _, child in ipairs(fightButton:GetChildren()) do  
         teleportToTarget(child)  
     end  
-
-    -- Hook new targets  
     fightButton.ChildAdded:Connect(function(child)  
         task.wait(0.3)  
         teleportToTarget(child)  
     end)  
 end  
-
--- Main Execution  
+ 
 if isTargetPlace() then  
     sendNotification("SYSTEM ONLINE", "Auto-fight engaged!")  
 
-    -- Destruction System  
     destroyTargetFolders()  
     hookFolderDestruction()  
 
-    -- Fight Activation  
     autoClickVoteButton()  
-
-    -- Teleport System  
+ 
     setupFightTeleport()  
 else  
     sendNotification("SYSTEM OFFLINE", "Wrong game detected")  
