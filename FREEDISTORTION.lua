@@ -3,8 +3,8 @@ local LocalPlayer = Players.LocalPlayer
 local RunService = game:GetService("RunService")
 
 local antikick = loadstring(game:HttpGet("https://raw.githubusercontent.com/DistortionAltFR/sans.rng/refs/heads/main/Antikick.lua"))()
+task.wait(4)
 local bypass = loadstring(game:HttpGet("https://raw.githubusercontent.com/DistortionAltFR/sans.rng/refs/heads/main/Bypass.lua"))()
-task.wait(1)
 local whitelist = loadstring(game:HttpGet("https://raw.githubusercontent.com/DistortionAltFR/sans.rng/main/Whitelist.lua"))()
 
 local function processStorageAndLeaderstats() 
