@@ -8,12 +8,6 @@ local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
 local player = game.Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 
-for _, child in ipairs(character:GetChildren()) do
-    if child:IsA("BasePart") then
-        child.CanTouch = false
-    end
-end
-
 local BINDParts = {}
 
 local function tryAddBIND(part)
@@ -29,6 +23,17 @@ local function tryAddBIND(part)
 			end)
 		end
 	end
+end
+
+local function DisableCharacterTouch()
+    local character = LocalPlayer.Character
+    if character then
+        for _, descendant in pairs(character:GetDescendants()) do
+            if descendant:IsA("BasePart") then
+                descendant.CanTouch = false
+            end
+        end
+    end
 end
 
 for _, part in ipairs(workspace:GetDescendants()) do
@@ -64,3 +69,6 @@ RunService.Heartbeat:Connect(function()
 		end
 	end
 end)
+
+DisableCharacterTouch()
+LocalPlayer.CharacterAdded:Connect(DisableCharacterTouch)
